@@ -527,7 +527,37 @@ function addMsg(role, text) {
   return d.querySelector('.bubble');
 }
 
-function showThink() {
+function addMsgWithAttachments(role, text, fileNames) {
+  const w = document.getElementById('welcome');
+  if (w) w.remove();
+
+  const chat = document.getElementById('chat');
+  const d    = document.createElement('div');
+  d.className = `msg ${role}`;
+
+  const av  = '👤';
+  const who = 'Você';
+
+  // Badges dos arquivos anexados
+  const badges = fileNames.map(name => {
+    const icon = name.endsWith('.pdf') ? '📄' : '📝';
+    return `<div class="msg-attachment">${icon} ${name}</div>`;
+  }).join('');
+
+  d.innerHTML = `
+    <div class="msg-av">${av}</div>
+    <div class="msg-body">
+      <div class="msg-hdr">
+        <span class="msg-who">${who}</span>
+        <span class="msg-ts">${ts()}</span>
+      </div>
+      ${badges}
+      ${text ? `<div class="bubble">${fmt(text)}</div>` : ''}
+    </div>`;
+
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+}
   const w = document.getElementById('welcome');
   if (w) w.remove();
 
@@ -595,21 +625,40 @@ function autoResize(el) {
 async function send() {
   const inp = document.getElementById('inp');
   const txt = inp.value.trim();
-  if (!txt || busy) return;
+
+  // Precisa de texto OU arquivo
+  if ((!txt && !attachedFiles.length) || busy) return;
 
   busy = true;
   document.getElementById('sendBtn').disabled = true;
+
+  // Monta o conteúdo da mensagem com os arquivos
+  const fileContext   = buildFileContext();
+  const userText      = txt || 'Analise o(s) arquivo(s) anexado(s) com os resultados dos testes.';
+  const fullContent   = userText + fileContext;
+  const fileNames     = attachedFiles.map(f => f.name);
+
   inp.value = '';
   autoResize(inp);
 
-  addMsg('user', txt);
+  // Renderiza mensagem do usuário com badge de anexo
+  addMsgWithAttachments('user', userText, fileNames);
   showThink();
-  msgs.push({ role: 'user', content: txt });
+
+  msgs.push({ role: 'user', content: fullContent });
+
+  // Limpa arquivos após enviar
+  clearAttachments();
 
   try {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type':                              'application/json',
+        'x-api-key':                                 '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',
+        'anthropic-version':                         '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
       body: JSON.stringify({
         model:      'claude-sonnet-4-20250514',
         max_tokens: 4096,
@@ -632,6 +681,143 @@ async function send() {
 
   busy = false;
   document.getElementById('sendBtn').disabled = false;
+}
+
+/* ─── FILE ATTACHMENT ────────────────────────────────────────────────────────── */
+
+// Estado dos arquivos anexados
+let attachedFiles = []; // [{ name, size, type, text }]
+
+// Configurar worker do PDF.js
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024)       return bytes + ' B';
+  if (bytes < 1048576)    return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / 1048576).toFixed(1) + ' MB';
+}
+
+function getFileIcon(type) {
+  if (type === 'application/pdf') return '📄';
+  return '📝'; // Word
+}
+
+async function handleFileSelect(event) {
+  const files = Array.from(event.target.files);
+  event.target.value = ''; // permite reanexar o mesmo arquivo
+
+  for (const file of files) {
+    const id    = Date.now() + Math.random();
+    const icon  = getFileIcon(file.type);
+    const isPDF = file.type === 'application/pdf';
+    const isDoc = file.name.endsWith('.docx') || file.name.endsWith('.doc');
+
+    if (!isPDF && !isDoc) {
+      showFileChip(id, file.name, file.size, icon, 'error', 'Formato não suportado');
+      continue;
+    }
+
+    // Mostra chip de carregamento
+    showFileChip(id, file.name, file.size, icon, 'loading', 'Lendo arquivo...');
+
+    try {
+      let text = '';
+      if (isPDF) {
+        text = await extractPDF(file);
+      } else {
+        text = await extractDocx(file);
+      }
+
+      if (!text.trim()) throw new Error('Nenhum texto encontrado no arquivo');
+
+      // Limita a 15.000 caracteres para não estourar o contexto
+      if (text.length > 15000) {
+        text = text.substring(0, 15000) + '\n\n[... conteúdo truncado para caber no contexto ...]';
+      }
+
+      attachedFiles.push({ id, name: file.name, size: file.size, type: file.type, text });
+      updateFileChip(id, file.name, file.size, icon, 'ready');
+
+    } catch (err) {
+      updateFileChip(id, file.name, file.size, icon, 'error', err.message);
+    }
+  }
+}
+
+async function extractPDF(file) {
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf         = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  let   fullText    = '';
+
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page    = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const pageText = content.items.map(item => item.str).join(' ');
+    fullText += `\n--- Página ${i} ---\n${pageText}`;
+  }
+  return fullText;
+}
+
+async function extractDocx(file) {
+  const arrayBuffer = await file.arrayBuffer();
+  const result      = await mammoth.extractRawText({ arrayBuffer });
+  return result.value;
+}
+
+function showFileChip(id, name, size, icon, state, statusMsg) {
+  const wrap = document.getElementById('filePreviewWrap');
+  const chip = document.createElement('div');
+  chip.className = `file-chip ${state === 'loading' ? 'loading' : state === 'error' ? 'error' : ''}`;
+  chip.id        = `file-chip-${id}`;
+
+  const label = state === 'loading'
+    ? `<span style="font-style:italic">${statusMsg}</span>`
+    : state === 'error'
+    ? `<span>${name} — ⚠️ ${statusMsg}</span>`
+    : `<span class="file-chip-name">${name}</span><span class="file-chip-size">${formatBytes(size)}</span>`;
+
+  chip.innerHTML = `
+    <span class="file-chip-icon">${icon}</span>
+    ${label}
+    <button class="file-chip-remove" onclick="removeFile(${id})" title="Remover">✕</button>`;
+
+  wrap.appendChild(chip);
+}
+
+function updateFileChip(id, name, size, icon, state, statusMsg) {
+  const chip = document.getElementById(`file-chip-${id}`);
+  if (!chip) return;
+  chip.className = `file-chip ${state === 'error' ? 'error' : ''}`;
+
+  const label = state === 'error'
+    ? `<span>⚠️ ${statusMsg}</span>`
+    : `<span class="file-chip-name">${name}</span><span class="file-chip-size">${formatBytes(size)}</span>`;
+
+  chip.innerHTML = `
+    <span class="file-chip-icon">${icon}</span>
+    ${label}
+    <button class="file-chip-remove" onclick="removeFile(${id})" title="Remover">✕</button>`;
+}
+
+function removeFile(id) {
+  attachedFiles = attachedFiles.filter(f => f.id !== id);
+  const chip    = document.getElementById(`file-chip-${id}`);
+  if (chip) chip.remove();
+}
+
+function buildFileContext() {
+  if (!attachedFiles.length) return '';
+  return attachedFiles.map(f =>
+    `\n\n════════════════════════════════\nARQUIVO ANEXADO: ${f.name}\n════════════════════════════════\n${f.text}`
+  ).join('\n');
+}
+
+function clearAttachments() {
+  attachedFiles = [];
+  document.getElementById('filePreviewWrap').innerHTML = '';
 }
 
 /* ─── INIT ──────────────────────────────────────────────────────────────────── */
