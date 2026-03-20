@@ -640,7 +640,7 @@ async function send() {
   var fullContent = userText + fileContext;
   var fileNames   = attachedFiles.map(function (f) { return f.name; });
 
-  inp.value = '';
+inp.value = '';
   autoResize(inp);
 
   if (fileNames.length > 0) {
@@ -654,14 +654,11 @@ async function send() {
   clearAttachments();
 
   try {
-    var r = await 
-try {
     // ⚠️ Substitua esta URL pela URL que o Render gerou para você!
     var r = await fetch('https://api-agente.onrender.com', {
       method:  'POST',
       headers: {
         'Content-Type': 'application/json'
-        // Veja que a chave de API sumiu daqui! Muito mais seguro.
       },
       body: JSON.stringify({
         system:     SYSTEM,
@@ -683,9 +680,9 @@ try {
 
   } catch (err) {
     rmThink();
-    addMsg('ai', '**Erro na comunicação:** ' + err.message + '\n\nVerifique sua conexão e tente novamente.');
+    addMsg('ai', '**Erro na comunicação:** ' + err.message);
     console.error("Erro detalhado:", err);
-  });
+  }
 
     var data  = await r.json();
     var reply = (data.content || []).map(function (b) { return b.text || ''; }).join('') || 'Erro na resposta da API.';
