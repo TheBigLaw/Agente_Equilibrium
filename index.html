@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,700&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 </head>
 <body>
 
@@ -693,6 +695,10 @@
     </div>
 
     <div class="inp-wrap">
+      <!-- Input de arquivo oculto -->
+      <input type="file" id="fileInput" accept=".pdf,.doc,.docx"
+             style="display:none" onchange="handleFileSelect(event)">
+
       <div class="inp-chips">
         <span class="inp-chip template" onclick="openModal()">📁 Templates Clínicos</span>
         <span class="inp-chip"         onclick="clearChat()">🗑️ Limpar</span>
@@ -700,11 +706,20 @@
         <span class="inp-chip"         onclick="requestDiag()">🔍 Diagnóstico Diferencial</span>
         <span class="inp-chip"         onclick="requestAnamnese()">📝 Anamnese Funcional</span>
       </div>
+
+      <!-- Preview dos arquivos anexados -->
+      <div class="file-preview-wrap" id="filePreviewWrap"></div>
+
       <div class="inp-row">
+        <!-- Botão de anexar -->
+        <button class="attach-btn" id="attachBtn" onclick="document.getElementById('fileInput').click()"
+                title="Anexar PDF ou Word (.pdf, .doc, .docx)">
+          <span class="attach-icon">📎</span>
+        </button>
         <textarea
           class="inp-box"
           id="inp"
-          placeholder="Cole os resultados dos testes aqui (pontuações, percentis, escores) ou descreva o caso. Você pode combinar múltiplos testes na mesma análise..."
+          placeholder="Cole os resultados dos testes aqui, ou anexe um PDF/Word com 📎. Você pode combinar múltiplos testes na mesma análise..."
           rows="2"
           onkeydown="handleKey(event)"
           oninput="autoResize(this)"
@@ -713,7 +728,7 @@
       </div>
       <div class="inp-foot">
         Shift+Enter → nova linha &nbsp;·&nbsp; Enter → enviar &nbsp;·&nbsp;
-        Selecione testes na barra lateral para templates automáticos
+        📎 Anexar PDF ou Word com os resultados dos testes
       </div>
     </div>
   </main>
