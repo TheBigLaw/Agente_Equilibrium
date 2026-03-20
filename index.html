@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NeuroEquilíbrio — Agente Clínico</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,700&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     HEADER
+     ══════════════════════════════════════════ -->
+<header class="hdr">
+  <div class="logo">
+    <div class="logo-icon">🧠</div>
+    <div class="logo-name">Neuro<em>Equilíbrio</em> — Agente Clínico</div>
+  </div>
+  <div class="hdr-right">
+    <div class="pop-selector">
+      <button class="pop-btn on"  onclick="setPopulation('todos', this)">Todos</button>
+      <button class="pop-btn"     onclick="setPopulation('pre',   this)">Pré-Escolar</button>
+      <button class="pop-btn"     onclick="setPopulation('esc',   this)">Escolar</button>
+      <button class="pop-btn"     onclick="setPopulation('adu',   this)">Adultos</button>
+    </div>
+    <div class="live-tag">Agente Ativo</div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════
+     LAYOUT
+     ══════════════════════════════════════════ -->
+<div class="layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sb">
+    <div class="sb-search">
+      <input type="text" id="sbSearch" placeholder="🔍  Buscar instrumento..."
+             oninput="filterTests(this.value)">
+    </div>
+
+    <div class="sb-scroll" id="sbScroll">
+
+      <!-- Inteligência Geral -->
+      <div class="sb-section" data-cat="inteligencia">
+        <div class="sb-section-hdr open" onclick="toggleCat(this)">
+          <span>🧩</span> Inteligência Geral <span class="arr">▶</span>
+        </div>
+        <div class="sb-items open">
+          <div class="sb-item" data-pop="esc,adu" data-test="WAIS-III" onclick="pickTest(this)">
+            <div class="sb-item-icon">📊</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">WAIS-III</div>
+              <div class="sb-item-sub">QI Global · 16–89a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="WISC-IV" onclick="pickTest(this)">
+            <div class="sb-item-icon">📊</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">WISC-IV</div>
+              <div class="sb-item-sub">QI Global · 6–16a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="pre,esc,adu" data-test="WMT-2" onclick="pickTest(this)">
+            <div class="sb-item-icon">🔷</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">WMT-2 (Matrizes de Viena)</div>
+              <div class="sb-item-sub">Inteligência Geral · 7–80+a</div>
+            </div>
+            <span class="sb-item-pop pop-all">ALL</span>
+          </div>
+          <div class="sb-item" data-pop="pre,esc" data-test="CPM-RAVEN" onclick="pickTest(this)">
+            <div class="sb-item-icon">◼</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">CPM-Raven</div>
+              <div class="sb-item-sub">Inteligência Não-Verbal · 5–11a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="pre,esc" data-test="SON-R_2-7" onclick="pickTest(this)">
+            <div class="sb-item-icon">🎲</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">SON-R 2½–7</div>
+              <div class="sb-item-sub">Inteligência Não-Verbal · 2,5–7a</div>
+            </div>
+            <span class="sb-item-pop pop-pe">PE</span>
+          </div>
+          <div class="sb-item" data-pop="esc,adu" data-test="SON-R_6-40" onclick="pickTest(this)">
+            <div class="sb-item-icon">🎲</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">SON-R 6–40</div>
+              <div class="sb-item-sub">Inteligência Não-Verbal · 6–40a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="esc,adu" data-test="BETA-III" onclick="pickTest(this)">
+            <div class="sb-item-icon">🔵</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">BETA-III</div>
+              <div class="sb-item-sub">Inteligência Não-Verbal · 14–88a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+          <div class="sb-item" data-pop="pre,esc" data-test="COLUMBIA" onclick="pickTest(this)">
+            <div class="sb-item-icon">⚖️</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">Escala Columbia</div>
+              <div class="sb-item-sub">Maturidade Mental · 3–9a 11m</div>
+            </div>
+            <span class="sb-item-pop pop-pe">PE</span>
+          </div>
+          <div class="sb-item" data-pop="pre" data-test="BINAUT" onclick="pickTest(this)">
+            <div class="sb-item-icon">📏</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">Escala BINAUT</div>
+              <div class="sb-item-sub">Maturidade Mental · 3–7a</div>
+            </div>
+            <span class="sb-item-pop pop-pe">PE</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="TIAH" onclick="pickTest(this)">
+            <div class="sb-item-icon">🌟</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">TIAH/S</div>
+              <div class="sb-item-sub">Inteligência + Hab. Sociais · 9–15a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desenvolvimento Infantil -->
+      <div class="sb-section" data-cat="desenvolvimento">
+        <div class="sb-section-hdr" onclick="toggleCat(this)">
+          <span>🌱</span> Desenvolvimento Infantil <span class="arr">▶</span>
+        </div>
+        <div class="sb-items">
+          <div class="sb-item" data-pop="pre" data-test="BAYLEY-III" onclick="pickTest(this)">
+            <div class="sb-item-icon">👶</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">Bayley-III</div>
+              <div class="sb-item-sub">Desenvolvimento Global · 1–42m</div>
+            </div>
+            <span class="sb-item-pop pop-pe">PE</span>
+          </div>
+          <div class="sb-item" data-pop="pre" data-test="IDADI" onclick="pickTest(this)">
+            <div class="sb-item-icon">🌿</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">IDADI</div>
+              <div class="sb-item-sub">Desenvolvimento Infantil · 4–72m</div>
+            </div>
+            <span class="sb-item-pop pop-pe">PE</span>
+          </div>
+          <div class="sb-item" data-pop="pre,esc,adu" data-test="VINELAND-3" onclick="pickTest(this)">
+            <div class="sb-item-icon">♿</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">Vineland-3</div>
+              <div class="sb-item-sub">Comportamento Adaptativo · 0–90a</div>
+            </div>
+            <span class="sb-item-pop pop-all">ALL</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="EFA" onclick="pickTest(this)">
+            <div class="sb-item-icon">📐</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">EFA</div>
+              <div class="sb-item-sub">Funcionamento Adaptativo · 6–15a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leitura / Escrita / Linguagem -->
+      <div class="sb-section" data-cat="linguagem">
+        <div class="sb-section-hdr" onclick="toggleCat(this)">
+          <span>📖</span> Leitura, Escrita &amp; Linguagem <span class="arr">▶</span>
+        </div>
+        <div class="sb-items">
+          <div class="sb-item" data-pop="pre,esc" data-test="ANELE1" onclick="pickTest(this)">
+            <div class="sb-item-icon">🔤</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">ANELE Vol.1 — PCFO</div>
+              <div class="sb-item-sub">Consciência Fonológica · 3–9a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="ANELE2" onclick="pickTest(this)">
+            <div class="sb-item-icon">⚡</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">ANELE Vol.2 — T-NAR</div>
+              <div class="sb-item-sub">Nomeação Automática Rápida · 6–14a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="ANELE3" onclick="pickTest(this)">
+            <div class="sb-item-icon">✏️</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">ANELE Vol.3 — TEPPE</div>
+              <div class="sb-item-sub">Escrita Palavras/Pseudo · 1º–9º</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="esc,adu" data-test="ANELE4" onclick="pickTest(this)">
+            <div class="sb-item-icon">👁️</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">ANELE Vol.4 — TLPP</div>
+              <div class="sb-item-sub">Leitura Palavras/Pseudo · 6–85a</div>
+            </div>
+            <span class="sb-item-pop pop-all">ALL</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="PROLEC" onclick="pickTest(this)">
+            <div class="sb-item-icon">📗</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">PROLEC (Fund.)</div>
+              <div class="sb-item-sub">Processos de Leitura · 2º–5º ano</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="PROLEC-SE" onclick="pickTest(this)">
+            <div class="sb-item-icon">📘</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">PROLEC-SE-R</div>
+              <div class="sb-item-sub">Leitura Ensino Médio · 6º–Médio</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="TDE-II" onclick="pickTest(this)">
+            <div class="sb-item-icon">🏫</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">TDE-II</div>
+              <div class="sb-item-sub">Desempenho Escolar L/E/M · 1º–9º</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="PRONUMERO" onclick="pickTest(this)">
+            <div class="sb-item-icon">🔢</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">PRONUMERO</div>
+              <div class="sb-item-sub">Processamento Numérico · 2º–5º</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="TISD" onclick="pickTest(this)">
+            <div class="sb-item-icon">🔍</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">TISD</div>
+              <div class="sb-item-sub">Sinais de Dislexia · 6–11a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Memória -->
+      <div class="sb-section" data-cat="memoria">
+        <div class="sb-section-hdr" onclick="toggleCat(this)">
+          <span>💾</span> Memória <span class="arr">▶</span>
+        </div>
+        <div class="sb-items">
+          <div class="sb-item" data-pop="esc,adu" data-test="RAVLT" onclick="pickTest(this)">
+            <div class="sb-item-icon">🎵</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">RAVLT</div>
+              <div class="sb-item-sub">Memória Auditivo-Verbal · 6–92a</div>
+            </div>
+            <span class="sb-item-pop pop-all">ALL</span>
+          </div>
+          <div class="sb-item" data-pop="esc,adu" data-test="TEPIC-M-2" onclick="pickTest(this)">
+            <div class="sb-item-icon">👁️</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">TEPIC-M-2</div>
+              <div class="sb-item-sub">Memória Visual · 15–92a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+          <div class="sb-item" data-pop="pre" data-test="TIME-R" onclick="pickTest(this)">
+            <div class="sb-item-icon">⏱️</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">TIME-R</div>
+              <div class="sb-item-sub">Memória Curto Prazo · 3–6a 11m</div>
+            </div>
+            <span class="sb-item-pop pop-pe">PE</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Atenção -->
+      <div class="sb-section" data-cat="atencao">
+        <div class="sb-section-hdr" onclick="toggleCat(this)">
+          <span>🎯</span> Atenção <span class="arr">▶</span>
+        </div>
+        <div class="sb-items">
+          <div class="sb-item" data-pop="esc,adu" data-test="BPA-2" onclick="pickTest(this)">
+            <div class="sb-item-icon">🎯</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">BPA-2</div>
+              <div class="sb-item-sub">Atenção Geral · 6–94a</div>
+            </div>
+            <span class="sb-item-pop pop-all">ALL</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="TAVIS-4" onclick="pickTest(this)">
+            <div class="sb-item-icon">👁️</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">TAVIS-4</div>
+              <div class="sb-item-sub">Atenção Visual · 6–17a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="esc,adu" data-test="D2-R" onclick="pickTest(this)">
+            <div class="sb-item-icon">d2</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">Teste D2-R</div>
+              <div class="sb-item-sub">Atenção Concentrada · 9–60a</div>
+            </div>
+            <span class="sb-item-pop pop-all">ALL</span>
+          </div>
+          <div class="sb-item" data-pop="adu" data-test="TEACO" onclick="pickTest(this)">
+            <div class="sb-item-icon">🔀</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">TEACO / TEADI / TEALT</div>
+              <div class="sb-item-sub">Atenção Conc./Div./Alt. · 18–72a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Funções Executivas -->
+      <div class="sb-section" data-cat="executivo">
+        <div class="sb-section-hdr" onclick="toggleCat(this)">
+          <span>⚙️</span> Funções Executivas <span class="arr">▶</span>
+        </div>
+        <div class="sb-items">
+          <div class="sb-item" data-pop="esc,adu" data-test="FDT" onclick="pickTest(this)">
+            <div class="sb-item-icon">5️⃣</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">FDT (Cinco Dígitos)</div>
+              <div class="sb-item-sub">Flexibilidade Cognitiva · 6–90a</div>
+            </div>
+            <span class="sb-item-pop pop-all">ALL</span>
+          </div>
+          <div class="sb-item" data-pop="esc,adu" data-test="TORRE" onclick="pickTest(this)">
+            <div class="sb-item-icon">🗼</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">Torre de Londres</div>
+              <div class="sb-item-sub">Planejamento · 10–59a</div>
+            </div>
+            <span class="sb-item-pop pop-all">ALL</span>
+          </div>
+          <div class="sb-item" data-pop="adu" data-test="BDEFS" onclick="pickTest(this)">
+            <div class="sb-item-icon">📋</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">BDEFS (Barkley)</div>
+              <div class="sb-item-sub">Déficits FE · 18–70a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEA / Autismo -->
+      <div class="sb-section" data-cat="tea">
+        <div class="sb-section-hdr" onclick="toggleCat(this)">
+          <span>🌈</span> TEA / Autismo <span class="arr">▶</span>
+        </div>
+        <div class="sb-items">
+          <div class="sb-item" data-pop="pre" data-test="MCHAT" onclick="pickTest(this)">
+            <div class="sb-item-icon">🔎</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">Escala M-CHAT</div>
+              <div class="sb-item-sub">Rastreio Precoce · 16–30m</div>
+            </div>
+            <span class="sb-item-pop pop-pe">PE</span>
+          </div>
+          <div class="sb-item" data-pop="pre" data-test="PROTEA" onclick="pickTest(this)">
+            <div class="sb-item-icon">🧩</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">PROTEA-R-NV</div>
+              <div class="sb-item-sub">Avaliação TEA · 2–5a</div>
+            </div>
+            <span class="sb-item-pop pop-pe">PE</span>
+          </div>
+          <div class="sb-item" data-pop="pre" data-test="ADOS2_M2" onclick="pickTest(this)">
+            <div class="sb-item-icon">🏥</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">ADOS-2 Módulo 2</div>
+              <div class="sb-item-sub">Diagnóstico TEA · 3–10a</div>
+            </div>
+            <span class="sb-item-pop pop-pe">PE</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="ADOS2_M3" onclick="pickTest(this)">
+            <div class="sb-item-icon">🏥</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">ADOS-2 Módulo 3</div>
+              <div class="sb-item-sub">Diagnóstico TEA · 11–16a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="adu" data-test="ADOS2_M4" onclick="pickTest(this)">
+            <div class="sb-item-icon">🏥</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">ADOS-2 Módulo 4</div>
+              <div class="sb-item-sub">Diagnóstico TEA · 17+a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+          <div class="sb-item" data-pop="pre,esc" data-test="ATA" onclick="pickTest(this)">
+            <div class="sb-item-icon">📊</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">Escala ATA</div>
+              <div class="sb-item-sub">Traços Autísticos · 2–18a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="pre,esc,adu" data-test="SRS2" onclick="pickTest(this)">
+            <div class="sb-item-icon">🤝</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">SRS-2</div>
+              <div class="sb-item-sub">Responsividade Social · 2,5–adulto</div>
+            </div>
+            <span class="sb-item-pop pop-all">ALL</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="ASSQ" onclick="pickTest(this)">
+            <div class="sb-item-icon">📋</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">ASSQ</div>
+              <div class="sb-item-sub">Rastreio Autismo · 7–16a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="AQ" onclick="pickTest(this)">
+            <div class="sb-item-icon">🧩</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">AQ (Adolescente)</div>
+              <div class="sb-item-sub">Rastreio · 12–15a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="esc,adu" data-test="RAADS" onclick="pickTest(this)">
+            <div class="sb-item-icon">🔬</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">RAADS-R-BR Screen</div>
+              <div class="sb-item-sub">Rastreio Adulto · 16+a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+          <div class="sb-item" data-pop="esc,adu" data-test="CATQ" onclick="pickTest(this)">
+            <div class="sb-item-icon">🎭</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">CAT-Q</div>
+              <div class="sb-item-sub">Camuflagem · 16+a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+          <div class="sb-item" data-pop="adu" data-test="QA16" onclick="pickTest(this)">
+            <div class="sb-item-icon">❓</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">QA16+</div>
+              <div class="sb-item-sub">Rastreio Adulto · 16+a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+          <div class="sb-item" data-pop="adu" data-test="CAMBRIDGE" onclick="pickTest(this)">
+            <div class="sb-item-icon">🎓</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">Esc. de Cambridge</div>
+              <div class="sb-item-sub">Empatia vs. Sistematização</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+          <div class="sb-item" data-pop="pre,esc" data-test="ABC-ICA" onclick="pickTest(this)">
+            <div class="sb-item-icon">🧒</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">ABC-ICA</div>
+              <div class="sb-item-sub">Comportamento Infantil · 3–14a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TDAH -->
+      <div class="sb-section" data-cat="tdah">
+        <div class="sb-section-hdr" onclick="toggleCat(this)">
+          <span>⚡</span> TDAH <span class="arr">▶</span>
+        </div>
+        <div class="sb-items">
+          <div class="sb-item" data-pop="pre,esc" data-test="SNAP-IV" onclick="pickTest(this)">
+            <div class="sb-item-icon">📋</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">SNAP-IV</div>
+              <div class="sb-item-sub">TDAH + TOD · 1–17a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="pre,esc" data-test="ETDAH-PAIS" onclick="pickTest(this)">
+            <div class="sb-item-icon">👨‍👩‍👧</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">ETDAH-PAIS</div>
+              <div class="sb-item-sub">TDAH (visão pais) · 2–17a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="esc,adu" data-test="ETDAH-AD" onclick="pickTest(this)">
+            <div class="sb-item-icon">✍️</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">ETDAH-AD</div>
+              <div class="sb-item-sub">TDAH (autoaval.) · 12–87a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="ASQ" onclick="pickTest(this)">
+            <div class="sb-item-icon">📝</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">Escala ASQ</div>
+              <div class="sb-item-sub">TDAH Escolar · 7–12a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="adu" data-test="ASRS-18" onclick="pickTest(this)">
+            <div class="sb-item-icon">🌐</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">ASRS-18 (OMS)</div>
+              <div class="sb-item-sub">Rastreio TDAH Adulto · 18+a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+          <div class="sb-item" data-pop="adu" data-test="BAARS-IV" onclick="pickTest(this)">
+            <div class="sb-item-icon">⚡</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">BAARS-IV (Barkley)</div>
+              <div class="sb-item-sub">TDAH Adulto · 18+a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emocional / Humor / Ansiedade -->
+      <div class="sb-section" data-cat="emocional">
+        <div class="sb-section-hdr" onclick="toggleCat(this)">
+          <span>💙</span> Emocional / Humor / Ansiedade <span class="arr">▶</span>
+        </div>
+        <div class="sb-items">
+          <div class="sb-item" data-pop="adu" data-test="BAI" onclick="pickTest(this)">
+            <div class="sb-item-icon">😰</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">BAI</div>
+              <div class="sb-item-sub">Ansiedade (Beck) · 17–80a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+          <div class="sb-item" data-pop="adu" data-test="BDI-II" onclick="pickTest(this)">
+            <div class="sb-item-icon">😔</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">BDI-II</div>
+              <div class="sb-item-sub">Depressão (Beck) · 13–80a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="SCARED" onclick="pickTest(this)">
+            <div class="sb-item-icon">😱</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">SCARED (Auto/Hetero)</div>
+              <div class="sb-item-sub">Ansiedade Infantil · 7–18a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="EBADEP-IJ" onclick="pickTest(this)">
+            <div class="sb-item-icon">💧</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">EBADEP-IJ</div>
+              <div class="sb-item-sub">Depressão Infantil · 7–18a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="adu" data-test="EBADEP-A" onclick="pickTest(this)">
+            <div class="sb-item-icon">💧</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">EBADEP-A</div>
+              <div class="sb-item-sub">Depressão Adulto</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="HUMOR-IJ" onclick="pickTest(this)">
+            <div class="sb-item-icon">🌡️</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">HUMOR-IJ</div>
+              <div class="sb-item-sub">Humor Infantil · 8–19a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="adu" data-test="HUMOR-U" onclick="pickTest(this)">
+            <div class="sb-item-icon">🌡️</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">HUMOR-U</div>
+              <div class="sb-item-sub">Humor Universitário · 18–29a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personalidade -->
+      <div class="sb-section" data-cat="personalidade">
+        <div class="sb-section-hdr" onclick="toggleCat(this)">
+          <span>🪞</span> Personalidade <span class="arr">▶</span>
+        </div>
+        <div class="sb-items">
+          <div class="sb-item" data-pop="esc,adu" data-test="BFP" onclick="pickTest(this)">
+            <div class="sb-item-icon">🌐</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">BFP (Big Five)</div>
+              <div class="sb-item-sub">Personalidade · 16+a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+          <div class="sb-item" data-pop="esc" data-test="EPQ-IJ" onclick="pickTest(this)">
+            <div class="sb-item-icon">👤</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">EPQ-IJ</div>
+              <div class="sb-item-sub">Personalidade · 10–16a</div>
+            </div>
+            <span class="sb-item-pop pop-es">ES</span>
+          </div>
+          <div class="sb-item" data-pop="adu" data-test="PFISTER" onclick="pickTest(this)">
+            <div class="sb-item-icon">🎨</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">PFISTER (Pirâmide)</div>
+              <div class="sb-item-sub">Projetivo · 18–66a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+          <div class="sb-item" data-pop="esc,adu" data-test="QCP" onclick="pickTest(this)">
+            <div class="sb-item-icon">💭</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">QCP/PBQ</div>
+              <div class="sb-item-sub">Crenças Cognitivas · 15–94a</div>
+            </div>
+            <span class="sb-item-pop pop-all">ALL</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sensorial & Habilidades Sociais -->
+      <div class="sb-section" data-cat="sensorial">
+        <div class="sb-section-hdr" onclick="toggleCat(this)">
+          <span>🖐️</span> Sensorial &amp; Habilidades Sociais <span class="arr">▶</span>
+        </div>
+        <div class="sb-items">
+          <div class="sb-item" data-pop="pre,esc,adu" data-test="PERFIL-SENSORIAL" onclick="pickTest(this)">
+            <div class="sb-item-icon">🖐️</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">Perfil Sensorial 2</div>
+              <div class="sb-item-sub">Processamento Sensorial · 0–adulto</div>
+            </div>
+            <span class="sb-item-pop pop-all">ALL</span>
+          </div>
+          <div class="sb-item" data-pop="adu" data-test="IHS-2" onclick="pickTest(this)">
+            <div class="sb-item-icon">🤝</div>
+            <div class="sb-item-info">
+              <div class="sb-item-name">IHS-2</div>
+              <div class="sb-item-sub">Habilidades Sociais · 16+a</div>
+            </div>
+            <span class="sb-item-pop pop-ad">AD</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /sb-scroll -->
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+    <div class="chat" id="chat">
+      <div class="welcome" id="welcome">
+        <div class="w-orb">🧠</div>
+        <h1 class="w-title">Agente Clínico<br><span>NeuroEquilíbrio</span></h1>
+        <p class="w-sub">Especializado em todos os instrumentos da bateria NeuroEquilíbrio. Forneça os dados de um ou múltiplos testes e receba análise clínica integrada, diagnóstico diferencial e laudo estruturado.</p>
+        <div class="w-badges">
+          <div class="w-badge" onclick="setChip(this)">⚡ Perfil TDAH completo</div>
+          <div class="w-badge" onclick="setChip(this)">🌈 Avaliação TEA infantil</div>
+          <div class="w-badge" onclick="setChip(this)">📖 Bateria de dislexia</div>
+          <div class="w-badge" onclick="setChip(this)">🧩 WAIS-III + BPA-2 + RAVLT</div>
+          <div class="w-badge" onclick="setChip(this)">👶 Avaliação pré-escolar global</div>
+          <div class="w-badge" onclick="setChip(this)">🎭 TEA adulto — RAADS + CAT-Q</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="inp-wrap">
+      <div class="inp-chips">
+        <span class="inp-chip template" onclick="openModal()">📁 Templates Clínicos</span>
+        <span class="inp-chip"         onclick="clearChat()">🗑️ Limpar</span>
+        <span class="inp-chip"         onclick="requestLaudo()">📄 Gerar Laudo Formal</span>
+        <span class="inp-chip"         onclick="requestDiag()">🔍 Diagnóstico Diferencial</span>
+        <span class="inp-chip"         onclick="requestAnamnese()">📝 Anamnese Funcional</span>
+      </div>
+      <div class="inp-row">
+        <textarea
+          class="inp-box"
+          id="inp"
+          placeholder="Cole os resultados dos testes aqui (pontuações, percentis, escores) ou descreva o caso. Você pode combinar múltiplos testes na mesma análise..."
+          rows="2"
+          onkeydown="handleKey(event)"
+          oninput="autoResize(this)"
+        ></textarea>
+        <button class="send" id="sendBtn" onclick="send()">➤</button>
+      </div>
+      <div class="inp-foot">
+        Shift+Enter → nova linha &nbsp;·&nbsp; Enter → enviar &nbsp;·&nbsp;
+        Selecione testes na barra lateral para templates automáticos
+      </div>
+    </div>
+  </main>
+
+</div><!-- /layout -->
+
+<!-- ══════════════════════════════════════════
+     MODAL — Templates Clínicos
+     ══════════════════════════════════════════ -->
+<div class="modal-bg" id="modalBg" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModalD()">✕</button>
+    <div class="modal-title">Templates Clínicos</div>
+    <div class="modal-sub">Casos pré-configurados com dados simulados para análise imediata</div>
+    <div class="tpl-grid">
+      <div class="tpl-item" onclick="applyTpl('tdah_escolar')">
+        <div class="tpl-item-title">⚡ TDAH Escolar Completo</div>
+        <div class="tpl-item-desc">WISC-IV + SNAP-IV + BPA-2 + TAVIS-4 + FDT + Torre de Londres</div>
+        <div class="tpl-item-tags">
+          <span class="tag tg-es">Escolar</span>
+          <span class="tag tg-qi">QI</span>
+        </div>
+      </div>
+      <div class="tpl-item" onclick="applyTpl('tea_infantil')">
+        <div class="tpl-item-title">🌈 TEA Infantil (3–7a)</div>
+        <div class="tpl-item-desc">SON-R + ADOS-2 M2 + SRS-2 + Vineland + Perfil Sensorial + M-CHAT</div>
+        <div class="tpl-item-tags">
+          <span class="tag tg-pr">Pré-Escolar</span>
+          <span class="tag tg-tea">TEA</span>
+        </div>
+      </div>
+      <div class="tpl-item" onclick="applyTpl('dislexia')">
+        <div class="tpl-item-title">📖 Bateria de Dislexia</div>
+        <div class="tpl-item-desc">ANELE 1–4 + PROLEC + TDE-II + TISD + WISC-IV (IVP/IMO)</div>
+        <div class="tpl-item-tags">
+          <span class="tag tg-es">Escolar</span>
+          <span class="tag tg-qi">Leitura</span>
+        </div>
+      </div>
+      <div class="tpl-item" onclick="applyTpl('tea_adulto')">
+        <div class="tpl-item-title">🎭 TEA Adulto</div>
+        <div class="tpl-item-desc">ADOS-2 M4 + RAADS-R + CAT-Q + Cambridge EQ + SRS-2 + IHS-2</div>
+        <div class="tpl-item-tags">
+          <span class="tag tg-ad">Adulto</span>
+          <span class="tag tg-tea">TEA</span>
+        </div>
+      </div>
+      <div class="tpl-item" onclick="applyTpl('tdah_adulto')">
+        <div class="tpl-item-title">⚡ TDAH Adulto (Barkley)</div>
+        <div class="tpl-item-desc">WAIS-III + ASRS-18 + BAARS-IV + BDEFS + BPA-2 + D2-R + RAVLT</div>
+        <div class="tpl-item-tags">
+          <span class="tag tg-ad">Adulto</span>
+          <span class="tag tg-qi">FE</span>
+        </div>
+      </div>
+      <div class="tpl-item" onclick="applyTpl('preescolar_global')">
+        <div class="tpl-item-title">👶 Avaliação Global Pré-Escolar</div>
+        <div class="tpl-item-desc">Bayley-III + IDADI + Vineland + Perfil Sensorial + TIME-R</div>
+        <div class="tpl-item-tags">
+          <span class="tag tg-pr">Pré-Escolar</span>
+        </div>
+      </div>
+      <div class="tpl-item" onclick="applyTpl('depressao_ansiedade')">
+        <div class="tpl-item-title">💙 Perfil Emocional Adulto</div>
+        <div class="tpl-item-desc">WAIS-III + BDI-II + BAI + BFP + QCP/PBQ + EBADEP-A</div>
+        <div class="tpl-item-tags">
+          <span class="tag tg-ad">Adulto</span>
+        </div>
+      </div>
+      <div class="tpl-item" onclick="applyTpl('escolar_global')">
+        <div class="tpl-item-title">🏫 Avaliação Escolar Global</div>
+        <div class="tpl-item-desc">WISC-IV + TDE-II + BPA-2 + RAVLT + Vineland + SCARED</div>
+        <div class="tpl-item-tags">
+          <span class="tag tg-es">Escolar</span>
+          <span class="tag tg-qi">QI</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
