@@ -624,6 +624,11 @@ function clearAttachments() {
 }
 
 /* ══════════════════════════════════════════
+   API CONFIG — Render backend
+   ══════════════════════════════════════════ */
+var API_URL = 'https://api-agente.onrender.com/api/chat';
+
+/* ══════════════════════════════════════════
    SEND MESSAGE
    ══════════════════════════════════════════ */
 async function send() {
@@ -654,25 +659,23 @@ async function send() {
   clearAttachments();
 
   try {
-    // ⚠️ Importante: Lembre-se de usar a URL correta da sua API aqui!
-    var r = await fetch('https://api-agente.onrender.com/api/chat', { 
+    var r = await fetch(API_URL, {
       method:  'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        system:     SYSTEM,
-        messages:   msgs,
-      }),
+        system:   SYSTEM,
+        messages: msgs
+      })
     });
 
     var data = await r.json();
 
     if (!r.ok) {
-      throw new Error(data.error?.message || "Erro desconhecido na API.");
+      throw new Error(data.error || data.error_message || 'Erro ' + r.status + ' do servidor');
     }
 
     var reply = (data.content || []).map(function (b) { return b.text || ''; }).join('');
+    if (!reply) { throw new Error('Resposta vazia da API'); }
 
     rmThink();
     addMsg('ai', reply);
@@ -680,11 +683,14 @@ async function send() {
 
   } catch (err) {
     rmThink();
-    addMsg('ai', '**Erro na comunicação:** ' + err.message);
-    console.error("Erro detalhado:", err);
+    var msg = err.message || 'Erro desconhecido';
+    if (msg.includes('Failed to fetch') || msg.includes('NetworkError')) {
+      msg = 'Não foi possível conectar ao servidor. Verifique se o serviço no Render está rodando em: ' + API_URL;
+    }
+    addMsg('ai', '**Erro na comunicação:** ' + msg);
+    console.error('Erro detalhado:', err);
   }
 
-  // Libera o chat para uma nova mensagem
   busy = false;
   document.getElementById('sendBtn').disabled = false;
 }
