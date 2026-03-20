@@ -658,7 +658,7 @@ async function send() {
       method:  'POST',
       headers: {
         'Content-Type':'application/json',
-        'x-api-key':'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',
+        'x-api-key':'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',
         'anthropic-version':'2023-06-01',
         'anthropic-dangerous-direct-browser-access': 'true',
       },
