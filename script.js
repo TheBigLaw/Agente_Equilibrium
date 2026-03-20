@@ -654,22 +654,38 @@ async function send() {
   clearAttachments();
 
   try {
-    var r = await fetch('https://api.anthropic.com/v1/messages', {
+    var r = await 
+try {
+    // ⚠️ Substitua esta URL pela URL que o Render gerou para você!
+    var r = await fetch('https://api-agente.onrender.com', {
       method:  'POST',
       headers: {
-        'Content-Type':'application/json',
-        'x-api-key':'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',
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
+        'Content-Type': 'application/json'
+        // Veja que a chave de API sumiu daqui! Muito mais seguro.
       },
-       
       body: JSON.stringify({
-        model:      'claude-sonnet-4-20250514',
-        max_tokens: 4096,
         system:     SYSTEM,
         messages:   msgs,
       }),
     });
+
+    var data = await r.json();
+
+    if (!r.ok) {
+      throw new Error(data.error?.message || "Erro desconhecido na API.");
+    }
+
+    var reply = (data.content || []).map(function (b) { return b.text || ''; }).join('');
+
+    rmThink();
+    addMsg('ai', reply);
+    msgs.push({ role: 'assistant', content: reply });
+
+  } catch (err) {
+    rmThink();
+    addMsg('ai', '**Erro na comunicação:** ' + err.message + '\n\nVerifique sua conexão e tente novamente.');
+    console.error("Erro detalhado:", err);
+  });
 
     var data  = await r.json();
     var reply = (data.content || []).map(function (b) { return b.text || ''; }).join('') || 'Erro na resposta da API.';
