@@ -640,7 +640,7 @@ async function send() {
   var fullContent = userText + fileContext;
   var fileNames   = attachedFiles.map(function (f) { return f.name; });
 
-inp.value = '';
+  inp.value = '';
   autoResize(inp);
 
   if (fileNames.length > 0) {
@@ -654,8 +654,8 @@ inp.value = '';
   clearAttachments();
 
   try {
-    // ⚠️ Substitua esta URL pela URL que o Render gerou para você!
-    var r = await fetch('https://api-agente.onrender.com', {
+    // ⚠️ Importante: Lembre-se de usar a URL correta da sua API aqui!
+    var r = await fetch('https://api-agente.onrender.com/api/chat', { 
       method:  'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -684,18 +684,7 @@ inp.value = '';
     console.error("Erro detalhado:", err);
   }
 
-    var data  = await r.json();
-    var reply = (data.content || []).map(function (b) { return b.text || ''; }).join('') || 'Erro na resposta da API.';
-
-    rmThink();
-    addMsg('ai', reply);
-    msgs.push({ role: 'assistant', content: reply });
-
-  } catch (err) {
-    rmThink();
-    addMsg('ai', '**Erro de conexão:** ' + err.message + '\n\nVerifique sua conexão e tente novamente.');
-  }
-
+  // Libera o chat para uma nova mensagem
   busy = false;
   document.getElementById('sendBtn').disabled = false;
 }
